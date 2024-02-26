@@ -37,7 +37,13 @@ public @interface Relations {
 		ANY, OUTBOUND, INBOUND
 	}
 
-	Class<?>[] edges();
+    public enum UniqueVertices {
+        GLOBAL,
+        PATH,
+        NONE,
+    }
+
+    Class<?>[] edges();
 
 	/**
 	 * Edges and vertices returned by this query will start at the traversal depth
@@ -63,5 +69,11 @@ public @interface Relations {
 	 * Whether the entity should be loaded lazily
 	 */
 	boolean lazy() default false;
+
+
+    /**
+     * ensure vertex uniqueness
+     */
+    UniqueVertices uniqueVertices() default UniqueVertices.GLOBAL;
 
 }
