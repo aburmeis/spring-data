@@ -105,6 +105,8 @@ public interface ArangoOperations {
 	 *
 	 * @param query
 	 *            An AQL query string
+	 * @param options
+	 *            Additional options that will be passed to the query API, can be null
 	 * @param entityClass
 	 *            The entity type of the result
 	 * @return cursor of the results
