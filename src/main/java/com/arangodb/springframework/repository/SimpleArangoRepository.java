@@ -235,10 +235,6 @@ public class SimpleArangoRepository<T, ID> implements ArangoRepository<T, ID> {
 	 */
 	@Override
 	public Page<T> findAll(final Pageable pageable) {
-		if (pageable == null) {
-			LOGGER.debug("Pageable in findAll(Pageable) is null");
-		}
-
 		final ArangoCursor<T> result = findAllInternal(pageable, null, new HashMap<>());
 		final List<T> content = result.asListRemaining();
 		return new PageImpl<>(content, pageable, ((Number) result.getStats().getFullCount()).longValue());
@@ -250,7 +246,7 @@ public class SimpleArangoRepository<T, ID> implements ArangoRepository<T, ID> {
 	 * @return the name of the collection
 	 */
 	private String getCollectionName() {
-		return arangoOperations.getConverter().getMappingContext().getPersistentEntity(domainClass).getCollection();
+		return arangoOperations.getConverter().getMappingContext().getRequiredPersistentEntity(domainClass).getCollection();
 	}
 
 	/**
@@ -320,7 +316,7 @@ public class SimpleArangoRepository<T, ID> implements ArangoRepository<T, ID> {
 		final Map<String, Object> bindVars = new HashMap<>();
 		bindVars.put("@col", getCollectionName());
 		final String predicate = exampleConverter.convertExampleToPredicate(example, bindVars);
-		final String filter = predicate.length() == 0 ? "" : " FILTER " + predicate;
+		final String filter = predicate.isEmpty() ? "" : " FILTER " + predicate;
 		final String query = String.format("FOR e IN @@col %s COLLECT WITH COUNT INTO length RETURN length", filter);
 		arangoOperations.collection(domainClass);
 		final ArangoCursor<Long> cursor = arangoOperations.query(query, bindVars, defaultQueryOptions(), Long.class);
